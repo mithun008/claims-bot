@@ -1,58 +1,53 @@
+# Claims Bot CDK Project
 
-# Welcome to your CDK Python project!
+This project uses the AWS Cloud Development Kit (CDK) to provision cloud infrastructure for a claims processing bot application. The CDK allows you to define your infrastructure as code using familiar programming languages like Python.
 
-This is a blank project for CDK development with Python.
+## Project Overview
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+The claims bot application provides a AI enabled chat interface for helping members and providers get clarity on their claim payments. It uses the data stored in a FHIR repository to generate responses for claim payment related queries. It generates the responses in a clear concise manner by decoding the payment lines. The FHIR repository is populated usiing the EDI data that is sent from the EDI gateway to their trading partners. 
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+## Architecture
+The solution comprises of two parts. The EDI part of the solution integrates the core EDI gateway with a FHIR repository. The data flow is triggered as 837(claims) or 835(Remittance) files are transmitted through the EDI channel. A copy of these files is uploaded to a S3 bucket. The upload object event triggers a Lambda function that invokes the AWS B2B Data Interchange service to transform the EDI to JSON. The output JSON is stored in another S3 bucket. The upload event on this bucket triggers another Lambda function that transforms the EDI specific JSON to an open standard FHIR Claim or ExplanationOfBenefits json based on the EDI type(837 or 835). The FHIR json resource is then stored in Amazon Healthlake. Amazon Healthlake is a fully managed FHIR repository.
 
-To manually create a virtualenv on MacOS and Linux:
+The second part of the solution is built using Amazon Bedrock which provides access to several foundational models. In our case, we are using the Claude Haiku 3 model but it can be changed based on customer requirements. It also uses the Bedrock Agent feature to provide a chat bot for querying claim payment. The Agent uses a Lambda function as the action group. The Lambda function invokes the FHIR repository in Amazon Healthlake to retrieve ExplanationOfBenefits resource based on the search parameters retrieved from the chat session. The FHIR resource is then sent to the foundational model for generating resonses that are well interpreted and explained in English language. It can also provide responses on follow up questions for responses that can be generated from the FHIR resource.
 
-```
-$ python3 -m venv .venv
-```
+![Claim Payments Bot](claim-payment-bot-solution.png)
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+This CDK project sets up the necessary AWS services and resources to run the Claims Bot application, including:
 
-```
-$ source .venv/bin/activate
-```
+- AWS Lambda functions for the action groups, triggering B2B data interchange job, transforming EDI json to FHIR and load to Amazon Healthlake
+- AWS Identity and Access Management (IAM) roles and policies
+- AWS Data Interchange transformer job
+- S3 buckets to received EDI files and store outputs
 
-If you are a Windows platform, you would activate the virtualenv like this:
+## Prerequisites
 
-```
-% .venv\Scripts\activate.bat
-```
+Before you can deploy this project, you'll need:
 
-Once the virtualenv is activated, you can install the required dependencies.
+- An AWS account and credentials configured locally
+- The AWS CDK toolkit installed (`npm install -g aws-cdk`)
+- Python 3.7 or later
 
-```
-$ pip install -r requirements.txt
-```
+## Deployment
 
-At this point you can now synthesize the CloudFormation template for this code.
+1. Clone this repository.
+2. Create a Python virtual environment and activate it.
+3. Install the project dependencies: `pip install -r requirements.txt`
+4. Bootstrap the CDK app: `cdk bootstrap`
+5. Deploy the CDK app: `cdk deploy`
 
-```
-$ cdk synth
-```
+## Useful Commands
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+- `cdk ls` - List all stacks in the app
+- `cdk synth` - Synthesize the CloudFormation template for the stacks
+- `cdk deploy` - Deploy the stacks to your AWS account
+- `cdk diff` - Compare the deployed stack with the current state
+- `cdk docs` - Open the CDK documentation
 
-## Useful commands
+## Contributing
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+Contributions are welcome! Please open an issue or submit a pull request.
 
-Enjoy!
+## License
+
+This project is licensed under the [MIT License](LICENSE).
