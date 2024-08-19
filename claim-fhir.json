@@ -1,0 +1,72 @@
+{
+    "resourceType": "Claim",
+    "id": "08328035-ee71-3253-891b-c1f4a08a5390",
+    "status": "active",
+    "type": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/claim-type",
+                "code": "professional"
+            }
+        ]
+    },
+    "use": "claim",
+    "patient": {
+        "reference": "urn:uuid:042e77c8-3117-bf52-38db-0fe75aeeb6df",
+        "display": "Scot349 Steuber698"
+    },
+    "billablePeriod": {
+        "start": "1991-07-27T05:02:30-07:00",
+        "end": "1991-07-27T05:17:30-07:00"
+    },
+    "created": "1991-07-27T05:17:30-07:00",
+    "provider": {
+        "reference": "Organization?identifier=https://github.com/synthetichealth/synthea|a6964d47-8af0-3df2-b99d-d8414eb1cfa3",
+        "display": "ARBOUR-FULLER HOSPITAL"
+    },
+    "priority": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/processpriority",
+                "code": "normal"
+            }
+        ]
+    },
+    "facility": {
+        "reference": "Location?identifier=https://github.com/synthetichealth/synthea|9fd2d389-a1bc-3b59-af91-de436ec7a826",
+        "display": "ARBOUR-FULLER HOSPITAL"
+    },
+    "insurance": [
+        {
+            "sequence": 1,
+            "focal": true,
+            "coverage": {
+                "display": "Medicaid"
+            }
+        }
+    ],
+    "item": [
+        {
+            "sequence": 1,
+            "productOrService": {
+                "coding": [
+                    {
+                        "system": "http://snomed.info/sct",
+                        "code": "185347001",
+                        "display": "Encounter for problem"
+                    }
+                ],
+                "text": "Encounter for problem"
+            },
+            "encounter": [
+                {
+                    "reference": "urn:uuid:186592bb-05c5-e995-79cc-749a319f3217"
+                }
+            ]
+        }
+    ],
+    "total": {
+        "value": 85.55,
+        "currency": "USD"
+    }
+}
